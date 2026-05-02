@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Actividad cuentos A2</title>
+
+<style>
+body {
+    font-family: Arial;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+    background: #f5f7fb;
+}
+
+h1 { margin-bottom: 10px; }
+
+.container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.column {
+    width: 30%;
+    min-width: 250px;
+}
+
+.item {
+    background: white;
+    margin: 8px;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.selected { border: 3px solid blue; }
+.done { background: #c8f7c5; }
+.error { background: #f7c5c5; }
+
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 16px;
+}
+
+#timer {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 10px;
+}
+
+/* PAGE 2 */
+#page2 {
+    display: none;
+}
+
+input {
+    padding: 5px;
+    margin: 5px;
+    width: 200px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- PAGE 1 -->
+<div id="page1">
+<h1>Asocia emoji, palabra y definición</h1>
+
+<div id="timer">10:00</div>
+<button onclick="startTimer()">Comenzar</button>
+
+<div class="container">
+<div class="column" id="emojis"></div>
+<div class="column" id="words"></div>
+<div class="column" id="definitions"></div>
+</div>
+
+<button onclick="checkAnswers()">Confirmar</button>
+</div>
+
+<!-- PAGE 2 -->
+<div id="page2">
+<h1>Traduce al francés</h1>
+
+<div>
+<button onclick="changeFontSize(16)">A-</button>
+<button onclick="changeFontSize(22)">A+</button>
+</div>
+
+<div id="vocabList"></div>
+</div>
+
+<script>
+const data = [
+{ id:"enano", emoji:"👷‍♂️", word:"Un enano", def:"Es una persona muy pequeña que vive en cuentos y trabaja mucho, por ejemplo en una mina."},
+{ id:"gigante", emoji:"🧌", word:"Un gigante", def:"Es una persona muy grande y fuerte que aparece en los cuentos."},
+{ id:"hada", emoji:"🧚", word:"Un hada", def:"Es un ser mágico pequeño con alas que puede hacer magia."},
+{ id:"buey", emoji:"🐂", word:"Un buey", def:"Es un animal grande y fuerte que ayuda a trabajar en el campo."},
+{ id:"cazador", emoji:"🏹", word:"Un cazador", def:"Es una persona que va al bosque para buscar y atrapar animales."},
+{ id:"genio", emoji:"🧞", word:"Un genio", def:"Es un ser mágico que vive en una lámpara y concede deseos."},
+{ id:"sirena", emoji:"🧜‍♀️", word:"Una sirena", def:"Es un ser mágico que vive en el mar y tiene cuerpo de mujer y cola de pez."},
+{ id:"mago", emoji:"🧙‍♂️", word:"Un mago", def:"Es una persona que hace magia y usa poderes especiales."},
+{ id:"caballero", emoji:"🛡️", word:"El caballero", def:"Es un hombre valiente que lucha con espada y protege a otras personas."},
+{ id:"cerdito", emoji:"🐷", word:"El cerdito", def:"Es un animal gordo y rosa."}
+];
+
+// Mélange
+function shuffle(arr) {
+    return arr.sort(() => Math.random() - 0.5);
+}
+
+const emojisDiv = document.getElementById("emojis");
+const wordsDiv = document.getElementById("words");
+const defsDiv = document.getElementById("definitions");
+
+shuffle([...data]).forEach(d => {
+    emojisDiv.innerHTML += `<div class="item emoji" data-id="${d.id}">${d.emoji}</div>`;
+});
+shuffle([...data]).forEach(d => {
+    wordsDiv.innerHTML += `<div class="item word" data-id="${d.id}">${d.word}</div>`;
+});
+shuffle([...data]).forEach(d => {
+    defsDiv.innerHTML += `<div class="item def" data-id="${d.id}">${d.def}</div>`;
+});
+
+// LOGIQUE
+let selectedEmoji=null, selectedWord=null;
+let associations=[];
+
+document.querySelectorAll('.emoji').forEach(el=>{
+    el.onclick=()=>{
+        resetSel();
+        selectedEmoji=el;
+        el.classList.add('selected');
+    }
+});
+
+document.querySelectorAll('.word').forEach(el=>{
+    el.onclick=()=>{
+        if(!selectedEmoji) return;
+        selectedWord=el;
+        el.classList.add('selected');
+    }
+});
+
+document.querySelectorAll('.def').forEach(el=>{
+    el.onclick=()=>{
+        if(!selectedEmoji || !selectedWord) return;
+
+        associations.push({
+            emoji:selectedEmoji.dataset.id,
+            word:selectedWord.dataset.id,
+            def:el.dataset.id
+        });
+
+        selectedEmoji.classList.add('done');
+        selectedWord.classList.add('done');
+        el.classList.add('done');
+
+        resetSel();
+    }
+});
+
+function resetSel(){
+    document.querySelectorAll('.selected').forEach(e=>e.classList.remove('selected'));
+    selectedEmoji=null;
+    selectedWord=null;
+}
+
+// TIMER
+let time=600;
+let timerInterval;
+
+function startTimer(){
+    if(timerInterval) return;
+    timerInterval=setInterval(()=>{
+        time--;
+        displayTime();
+        if(time<=0){
+            clearInterval(timerInterval);
+            alert("Tiempo terminado");
+        }
+    },1000);
+}
+
+function displayTime(){
+    let min=Math.floor(time/60);
+    let sec=time%60;
+    document.getElementById("timer").textContent=
+        `${min}:${sec<10?"0":""}${sec}`;
+}
+
+// VALIDATION
+function checkAnswers(){
+    let errors=0;
+
+    document.querySelectorAll('.item').forEach(e=>e.classList.remove('error'));
+
+    associations.forEach(a=>{
+        if(a.emoji!==a.word || a.word!==a.def){
+            errors++;
+
+            document.querySelector(`[data-id="${a.emoji}"]`).classList.add('error');
+            document.querySelector(`[data-id="${a.word}"]`).classList.add('error');
+            document.querySelector(`[data-id="${a.def}"]`).classList.add('error');
+        }
+    });
+
+    if(errors===0 && associations.length===10){
+        alert("¡Ganaste!");
+        goToPage2();
+    } else {
+        alert("Errores → -30 segundos");
+        time = Math.max(0, time - 30);
+        displayTime();
+    }
+}
+
+// PAGE 2
+function goToPage2(){
+    document.getElementById("page1").style.display="none";
+    document.getElementById("page2").style.display="block";
+
+    const vocabDiv=document.getElementById("vocabList");
+    vocabDiv.innerHTML="";
+
+    data.forEach(d=>{
+        vocabDiv.innerHTML += `
+        <div class="vocabItem">
+            ${d.word} → <input placeholder="francés">
+        </div>`;
+    });
+}
+
+// FIX FONT SIZE (fonctionne vraiment maintenant)
+function changeFontSize(size){
+    document.getElementById("vocabList").style.fontSize = size + "px";
+}
+</script>
+
+</body>
+</html>
