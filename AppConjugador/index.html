@@ -383,6 +383,300 @@ footer {
   .btn          { padding:12px 22px; font-size:1rem; }
   #etiqueta-verbo { font-size:clamp(2rem,12vw,3rem); }
 }
+
+/* ================================================================
+   BARRE D'ACCENTS CLIQUABLES
+================================================================ */
+#barra-acentos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+.btn-acento {
+  background: #EEF6FF;
+  border: 2px solid #BEE3F8;
+  border-radius: 8px;
+  color: var(--bleu-fonce);
+  font-family: var(--font-ui);
+  font-size: 1.15rem;
+  font-weight: 900;
+  width: 38px;
+  height: 38px;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0;
+}
+.btn-acento:hover  { background: var(--bleu); color: #fff; border-color: var(--bleu); transform: scale(1.12); }
+.btn-acento:active { transform: scale(.95); }
+
+/* ================================================================
+   SLIDER MODE EXPERTO
+================================================================ */
+#zona-experto {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+#zona-experto .experto-label {
+  font-size: .9rem;
+  font-weight: 800;
+  color: var(--bleu-fonce);
+}
+
+/* Le toggle switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+  flex-shrink: 0;
+}
+.switch input { display: none; }
+.slider-track {
+  position: absolute;
+  inset: 0;
+  background: #CBD5E0;
+  border-radius: 26px;
+  cursor: pointer;
+  transition: background .25s;
+}
+.slider-track::before {
+  content: '';
+  position: absolute;
+  width: 20px; height: 20px;
+  left: 3px; top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform .25s;
+  box-shadow: 0 1px 4px rgba(0,0,0,.2);
+}
+.switch input:checked + .slider-track { background: var(--rouge); }
+.switch input:checked + .slider-track::before { transform: translateX(22px); }
+
+/* Badge "EXPERTO" qui apparaît quand actif */
+#badge-experto {
+  display: none;
+  background: var(--rouge);
+  color: #fff;
+  font-size: .72rem;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  border-radius: 20px;
+  padding: 3px 10px;
+}
+#badge-experto.visible { display: inline-block; }
+
+/* ================================================================
+   INFOBULLE (tooltip)
+================================================================ */
+.tooltip-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.tooltip-icon {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--gris);
+  color: var(--gris);
+  font-size: .72rem;
+  font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+  cursor: default;
+  user-select: none;
+  flex-shrink: 0;
+}
+.tooltip-box {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bleu-fonce);
+  color: #fff;
+  font-size: .82rem;
+  font-weight: 700;
+  line-height: 1.55;
+  padding: 10px 14px;
+  border-radius: 10px;
+  width: 240px;
+  z-index: 100;
+  box-shadow: 0 4px 16px rgba(0,0,0,.2);
+  pointer-events: none;
+}
+.tooltip-box::after {
+  content: '';
+  position: absolute;
+  top: 100%; left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--bleu-fonce);
+}
+.tooltip-wrap:hover .tooltip-box,
+.tooltip-wrap:focus-within .tooltip-box { display: block; }
+
+#btn-ayuda {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2.5px solid var(--bleu);
+  background: #fff;
+  color: var(--bleu);
+  font-size: 1.1rem;
+  font-weight: 900;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .18s, color .18s, transform .15s;
+  z-index: 10;
+  line-height: 1;
+}
+#btn-ayuda:hover {
+  background: var(--bleu);
+  color: #fff;
+  transform: scale(1.1);
+}
+
+/* ================================================================
+   MODALE
+================================================================ */
+#overlay-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(2,48,71,0.45);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  animation: fadeIn .2s ease;
+}
+#overlay-modal.visible { display: flex; }
+
+#modal-ayuda {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: 0 16px 48px rgba(2,48,71,0.25);
+  padding: 28px 26px 24px;
+  width: 100%;
+  max-width: 680px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: popIn .25s cubic-bezier(.36,.07,.19,.97);
+}
+
+#modal-ayuda h3 {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--bleu-fonce);
+  margin-bottom: 4px;
+  text-align: center;
+}
+#modal-ayuda .modal-subtitulo {
+  text-align: center;
+  color: var(--gris);
+  font-size: .85rem;
+  font-weight: 700;
+  margin-bottom: 20px;
+  letter-spacing: .5px;
+}
+
+/* Bouton fermer */
+#btn-cerrar-modal {
+  position: absolute;
+  top: 12px; right: 14px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--gris);
+  line-height: 1;
+  transition: color .15s, transform .15s;
+}
+#btn-cerrar-modal:hover { color: var(--rouge); transform: scale(1.15); }
+
+/* ── Tableau de conjugaison ── */
+.tabla-conjugacion {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  font-size: .97rem;
+}
+.tabla-conjugacion thead tr {
+  background: var(--bleu-fonce);
+  color: #fff;
+}
+.tabla-conjugacion thead th {
+  padding: 9px 12px;
+  font-weight: 900;
+  text-align: center;
+  letter-spacing: .5px;
+  font-size: .88rem;
+}
+.tabla-conjugacion thead th:first-child {
+  text-align: left;
+  border-radius: 8px 0 0 0;
+}
+.tabla-conjugacion thead th:last-child {
+  border-radius: 0 8px 0 0;
+}
+.tabla-conjugacion tbody tr:nth-child(even) { background: #F5FAFF; }
+.tabla-conjugacion tbody tr:nth-child(odd)  { background: #fff; }
+.tabla-conjugacion tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid #E8F0F8;
+  vertical-align: middle;
+}
+.tabla-conjugacion tbody td:first-child {
+  font-weight: 800;
+  color: var(--bleu);
+  white-space: nowrap;
+  width: 130px;
+}
+/* Radical en noir, terminaison en rouge */
+.radical { color: var(--texte); font-weight: 800; }
+.terminacion { color: var(--rouge); font-weight: 900; }
+
+/* ── Section irréguliers ── */
+.modal-irregulares {
+  background: #FFF8E7;
+  border-left: 4px solid var(--jaune);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: .9rem;
+  line-height: 1.75;
+}
+.modal-irregulares strong {
+  color: var(--bleu-fonce);
+  display: block;
+  margin-bottom: 4px;
+  font-size: .85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.modal-irregulares .forma-irreg {
+  display: inline-block;
+  background: #fff;
+  border: 1.5px solid #f0dca0;
+  border-radius: 20px;
+  padding: 2px 10px;
+  margin: 2px 3px;
+  font-weight: 800;
+  font-size: .88rem;
+  color: var(--bleu-fonce);
+}
+.forma-irreg .t-irreg { color: var(--rouge); font-weight: 900; }
   </style>
 </head>
 <body>
@@ -398,6 +692,27 @@ footer {
   <h2>⚙️ Tiempos que quiero practicar</h2>
   <div class="tiempos-grid" id="tiempos-grid"></div>
   <p id="aviso-tiempos">⚠️ Selecciona al menos un tiempo para empezar.</p>
+
+  <!-- Slider mode experto -->
+  <div id="zona-experto">
+    <span class="experto-label">Modo experto</span>
+    <label class="switch" aria-label="Activar modo experto">
+      <input type="checkbox" id="toggle-experto" onchange="toggleExperto()"/>
+      <span class="slider-track"></span>
+    </label>
+    <span id="badge-experto">Experto</span>
+    <div class="tooltip-wrap">
+      <span class="tooltip-icon" tabindex="0">?</span>
+      <div class="tooltip-box">
+        <b>Modo normal (OFF)</b><br/>
+        Los acentos no son obligatorios.<br/>
+        <i>hablo</i> = <i>hablo</i> ✅<br/><br/>
+        <b>Modo experto (ON)</b><br/>
+        Los acentos son obligatorios.<br/>
+        <i>hable</i> ≠ <i>hablé</i> ❌
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- ── CARTE PRINCIPALE ── -->
@@ -409,6 +724,10 @@ footer {
   </div>
 
   <div id="pantalla-ejercicio" style="display:none;">
+
+    <!-- Bouton aide -->
+    <button id="btn-ayuda" onclick="abrirAyuda()" title="Ver modelo de conjugación">?</button>
+
     <div id="barra-puntos">
       <span class="ok">✅ <b id="pts-ok">0</b></span>
       <span class="ko">❌ <b id="pts-ko">0</b></span>
@@ -422,6 +741,16 @@ footer {
     <!-- Saisie de la réponse -->
     <div id="zona-respuesta">
       <label for="campo-respuesta">✏️ Escribe tu respuesta:</label>
+      <!-- Barre d'accents cliquables -->
+      <div id="barra-acentos">
+        <button class="btn-acento" onclick="insertarCaracter('á')" type="button">á</button>
+        <button class="btn-acento" onclick="insertarCaracter('é')" type="button">é</button>
+        <button class="btn-acento" onclick="insertarCaracter('í')" type="button">í</button>
+        <button class="btn-acento" onclick="insertarCaracter('ó')" type="button">ó</button>
+        <button class="btn-acento" onclick="insertarCaracter('ú')" type="button">ú</button>
+        <button class="btn-acento" onclick="insertarCaracter('ü')" type="button">ü</button>
+        <button class="btn-acento" onclick="insertarCaracter('ñ')" type="button">ñ</button>
+      </div>
       <input
         id="campo-respuesta"
         type="text"
@@ -437,10 +766,21 @@ footer {
   </div>
 </div>
 
+<!-- ================================================================
+     MODALE AIDE — TABLEAU DE CONJUGAISON
+================================================================ -->
+<div id="overlay-modal" onclick="cerrarAyudaSiOverlay(event)">
+  <div id="modal-ayuda">
+    <button id="btn-cerrar-modal" onclick="cerrarAyuda()">✕</button>
+    <h3 id="modal-titulo">Modelo de conjugación</h3>
+    <p class="modal-subtitulo" id="modal-subtitulo"></p>
+    <div id="modal-contenido"></div>
+  </div>
+</div>
+
 <footer>
-  Hecho con ❤️ para las clases de español del colegio de 7 Vallées<br/>
-  <small>Fuente Nunito (dislexia-friendly) · Sin conexión · </small>
-  <small>Creado por Alexandre DILLIE asistido por IA</small>
+  Hecho con ❤️ para las clases de español de collège<br/>
+  <small>Fuente Nunito (dislexia-friendly) · Sin conexión · Todo en un archivo</small>
 </footer>
 
 <!-- ================================================================
@@ -906,27 +1246,56 @@ function initUI() {
     lbl.appendChild(cb);
     lbl.appendChild(circ);
     lbl.appendChild(document.createTextNode(t.es));
-    lbl.addEventListener("click", (e)=>{ e.preventDefault(); toggleTiempo(t.id,lbl,cb); });
+    // On écoute "change" sur la checkbox (et non "click" sur le label)
+    // pour éviter le double déclenchement natif label→checkbox.
+    cb.addEventListener("change", ()=>toggleTiempo(t.id,lbl,cb));
     grid.appendChild(lbl);
   });
 }
 
 function toggleTiempo(id, lbl, cb) {
-  const activo = tiemposActivos.includes(id);
-  if (activo && tiemposActivos.length===1 && !E.primero) return; // garder ≥1
-  if (activo) {
-    tiemposActivos = tiemposActivos.filter(x=>x!==id);
-    lbl.classList.remove("activo"); cb.checked=false;
-  } else {
+  // cb.checked reflète déjà le nouvel état après le "change"
+  if (cb.checked) {
     tiemposActivos.push(id);
-    lbl.classList.add("activo"); cb.checked=true;
+    lbl.classList.add("activo");
+  } else {
+    // Empêcher de tout décocher quand une partie est en cours
+    if (tiemposActivos.length === 1 && !E.primero) {
+      cb.checked = true; // annuler le décochage
+      return;
+    }
+    tiemposActivos = tiemposActivos.filter(x => x !== id);
+    lbl.classList.remove("activo");
   }
-  document.getElementById("aviso-tiempos").style.display="none";
+  document.getElementById("aviso-tiempos").style.display = "none";
 }
 
-/* ============================================================
-   G. LOGIQUE DE JEU
-============================================================ */
+// Mode experto : si true, les accents sont obligatoires
+let modoExperto = false;
+
+function toggleExperto() {
+  modoExperto = document.getElementById("toggle-experto").checked;
+  const badge = document.getElementById("badge-experto");
+  badge.classList.toggle("visible", modoExperto);
+}
+
+/**
+ * Insère un caractère accentué à la position du curseur dans le champ réponse.
+ * Conserve la position du curseur après insertion.
+ */
+function insertarCaracter(car) {
+  const campo = document.getElementById("campo-respuesta");
+  if (campo.disabled) return;
+  const start = campo.selectionStart;
+  const end   = campo.selectionEnd;
+  const val   = campo.value;
+  campo.value = val.slice(0, start) + car + val.slice(end);
+  // Repositionner le curseur après le caractère inséré
+  campo.selectionStart = campo.selectionEnd = start + car.length;
+  campo.focus();
+}
+
+
 function nuevoEjercicio() {
   if (tiemposActivos.length===0) {
     document.getElementById("aviso-tiempos").style.display="block";
@@ -978,10 +1347,16 @@ function mostrarSolucion() {
   E.mostrada = true;
 
   const correcta = getConjugacion(E.verbo, E.tiempo.id, E.persona.idx);
-  const norm = s => s.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+
+  // Normalisation selon le mode :
+  // - mode normal  → on supprime les diacritiques avant comparaison
+  // - mode experto → comparaison exacte (minuscules seulement)
+  const normNormal  = s => s.trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  const normExacto  = s => s.trim().toLowerCase();
+  const normalizar  = modoExperto ? normExacto : normNormal;
 
   const respuesta = document.getElementById("campo-respuesta").value;
-  const acierto   = norm(respuesta)===norm(correcta);
+  const acierto   = normalizar(respuesta) === normalizar(correcta);
 
   const campo = document.getElementById("campo-respuesta");
   campo.disabled = true;
@@ -990,7 +1365,6 @@ function mostrarSolucion() {
   // Afficher la solution + commentaire
   const zon = document.getElementById("zona-solucion");
   if (respuesta.trim()==="") {
-    // Champ vide → évaluation manuelle
     zon.innerHTML = `<div id="texto-solucion">${correcta}</div>`;
     document.getElementById("zona-botones").innerHTML=`
       <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
@@ -1001,7 +1375,14 @@ function mostrarSolucion() {
     zon.innerHTML=`<div class="comentario-bien">¡Muy bien! ✅</div><div id="texto-solucion">${correcta}</div>`;
     registrar(true);
   } else {
-    zon.innerHTML=`<div class="comentario-mal">La respuesta correcta es:</div><div id="texto-solucion">${correcta}</div>`;
+    // En mode experto, préciser si c'est juste un problème d'accent
+    const normNormalR = normNormal(respuesta);
+    const normNormalC = normNormal(correcta);
+    const soloAcento  = modoExperto && (normNormalR === normNormalC);
+    const msg = soloAcento
+      ? `<div class="comentario-mal">¡Atención al acento! La respuesta correcta es:</div>`
+      : `<div class="comentario-mal">La respuesta correcta es:</div>`;
+    zon.innerHTML = msg + `<div id="texto-solucion">${correcta}</div>`;
     registrar(false);
   }
 }
@@ -1014,6 +1395,210 @@ function registrar(ok) {
   document.getElementById("zona-botones").innerHTML=`
     <button class="btn btn-siguiente" onclick="nuevoEjercicio()">➡️ Siguiente</button>`;
 }
+
+/* ============================================================
+   I. DONNÉES POUR LA MODALE D'AIDE
+   Tableaux modèles : HABLAR / COMER / VIVIR
+   Chaque cellule est { radical, terminacion }
+   Les irréguliers sont listés sous forme de "pilules".
+============================================================ */
+
+/*
+  Tableau à 6 lignes : él/ella et usted partagent la même forme,
+  idem pour ellos/ellas et ustedes.
+  Ordre : yo | tú | él/ella/usted | nosotros | vosotros | ellos/ellas/ustedes
+  Index dans les tableaux de conjugaison : 0  1  2  3  4  5
+*/
+const PERS_TABLA = [
+  "yo",
+  "tú",
+  "él / ella / usted",
+  "nosotros",
+  "vosotros",
+  "ellos / ellas / ustedes",
+];
+
+// Modèles réguliers : 6 entrées [radical, terminaison]
+const MODELOS = {
+  presente: {
+    hablar: [["habl","o"],["habl","as"],["habl","a"],["habl","amos"],["habl","áis"],["habl","an"]],
+    comer:  [["com","o"],["com","es"],["com","e"],["com","emos"],["com","éis"],["com","en"]],
+    vivir:  [["viv","o"],["viv","es"],["viv","e"],["viv","imos"],["viv","ís"],["viv","en"]],
+    irregulares: [
+      { verbo:"ser",    formas:["soy","eres","es","somos","sois","son"] },
+      { verbo:"estar",  formas:["estoy","estás","está","estamos","estáis","están"] },
+      { verbo:"ir",     formas:["voy","vas","va","vamos","vais","van"] },
+      { verbo:"tener",  formas:["tengo","tienes","tiene","tenemos","tenéis","tienen"] },
+      { verbo:"hacer",  formas:["hago","haces","hace","hacemos","hacéis","hacen"] },
+      { verbo:"poder",  formas:["puedo","puedes","puede","podemos","podéis","pueden"] },
+      { verbo:"querer", formas:["quiero","quieres","quiere","queremos","queréis","quieren"] },
+      { verbo:"decir",  formas:["digo","dices","dice","decimos","decís","dicen"] },
+      { verbo:"venir",  formas:["vengo","vienes","viene","venimos","venís","vienen"] },
+      { verbo:"saber",  formas:["sé","sabes","sabe","sabemos","sabéis","saben"] },
+    ]
+  },
+  indefinido: {
+    hablar: [["habl","é"],["habl","aste"],["habl","ó"],["habl","amos"],["habl","asteis"],["habl","aron"]],
+    comer:  [["com","í"],["com","iste"],["com","ió"],["com","imos"],["com","isteis"],["com","ieron"]],
+    vivir:  [["viv","í"],["viv","iste"],["viv","ió"],["viv","imos"],["viv","isteis"],["viv","ieron"]],
+    irregulares: [
+      { verbo:"ser / ir",  formas:["fui","fuiste","fue","fuimos","fuisteis","fueron"] },
+      { verbo:"tener",     formas:["tuve","tuviste","tuvo","tuvimos","tuvisteis","tuvieron"] },
+      { verbo:"hacer",     formas:["hice","hiciste","hizo","hicimos","hicisteis","hicieron"] },
+      { verbo:"estar",     formas:["estuve","estuviste","estuvo","estuvimos","estuvisteis","estuvieron"] },
+      { verbo:"poder",     formas:["pude","pudiste","pudo","pudimos","pudisteis","pudieron"] },
+      { verbo:"querer",    formas:["quise","quisiste","quiso","quisimos","quisisteis","quisieron"] },
+      { verbo:"decir",     formas:["dije","dijiste","dijo","dijimos","dijisteis","dijeron"] },
+      { verbo:"venir",     formas:["vine","viniste","vino","vinimos","vinisteis","vinieron"] },
+    ]
+  },
+  imperfecto: {
+    hablar: [["habl","aba"],["habl","abas"],["habl","aba"],["habl","ábamos"],["habl","abais"],["habl","aban"]],
+    comer:  [["com","ía"],["com","ías"],["com","ía"],["com","íamos"],["com","íais"],["com","ían"]],
+    vivir:  [["viv","ía"],["viv","ías"],["viv","ía"],["viv","íamos"],["viv","íais"],["viv","ían"]],
+    irregulares: [
+      { verbo:"ser",  formas:["era","eras","era","éramos","erais","eran"] },
+      { verbo:"ir",   formas:["iba","ibas","iba","íbamos","ibais","iban"] },
+      { verbo:"ver",  formas:["veía","veías","veía","veíamos","veíais","veían"] },
+    ]
+  },
+  perfecto: {
+    hablar: [["he habl","ado"],["has habl","ado"],["ha habl","ado"],["hemos habl","ado"],["habéis habl","ado"],["han habl","ado"]],
+    comer:  [["he com","ido"],["has com","ido"],["ha com","ido"],["hemos com","ido"],["habéis com","ido"],["han com","ido"]],
+    vivir:  [["he viv","ido"],["has viv","ido"],["ha viv","ido"],["hemos viv","ido"],["habéis viv","ido"],["han viv","ido"]],
+    irregulares: [
+      { verbo:"ser",     formas:["he sido","has sido","ha sido","hemos sido","habéis sido","han sido"] },
+      { verbo:"ir",      formas:["he ido","has ido","ha ido","hemos ido","habéis ido","han ido"] },
+      { verbo:"hacer",   formas:["he hecho","has hecho","ha hecho","hemos hecho","habéis hecho","han hecho"] },
+      { verbo:"ver",     formas:["he visto","has visto","ha visto","hemos visto","habéis visto","han visto"] },
+      { verbo:"poner",   formas:["he puesto","has puesto","ha puesto","hemos puesto","habéis puesto","han puesto"] },
+      { verbo:"decir",   formas:["he dicho","has dicho","ha dicho","hemos dicho","habéis dicho","han dicho"] },
+      { verbo:"escribir",formas:["he escrito","has escrito","ha escrito","hemos escrito","habéis escrito","han escrito"] },
+    ]
+  },
+  futuro: {
+    hablar: [["hablar","é"],["hablar","ás"],["hablar","á"],["hablar","emos"],["hablar","éis"],["hablar","án"]],
+    comer:  [["comer","é"],["comer","ás"],["comer","á"],["comer","emos"],["comer","éis"],["comer","án"]],
+    vivir:  [["vivir","é"],["vivir","ás"],["vivir","á"],["vivir","emos"],["vivir","éis"],["vivir","án"]],
+    irregulares: [
+      { verbo:"tener",  formas:["tendré","tendrás","tendrá","tendremos","tendréis","tendrán"] },
+      { verbo:"venir",  formas:["vendré","vendrás","vendrá","vendremos","vendréis","vendrán"] },
+      { verbo:"hacer",  formas:["haré","harás","hará","haremos","haréis","harán"] },
+      { verbo:"poder",  formas:["podré","podrás","podrá","podremos","podréis","podrán"] },
+      { verbo:"querer", formas:["querré","querrás","querrá","querremos","querréis","querrán"] },
+      { verbo:"saber",  formas:["sabré","sabrás","sabrá","sabremos","sabréis","sabrán"] },
+      { verbo:"salir",  formas:["saldré","saldrás","saldrá","saldremos","saldréis","saldrán"] },
+      { verbo:"decir",  formas:["diré","dirás","dirá","diremos","diréis","dirán"] },
+    ]
+  }
+};
+
+/* ============================================================
+   J. FONCTIONS MODALE
+============================================================ */
+
+/** Ouvre la fenêtre d'aide pour le temps en cours */
+function abrirAyuda() {
+  const tid = E.tiempo ? E.tiempo.id : tiemposActivos[0];
+  if (!tid) return;
+  const tObj = TIEMPOS.find(t => t.id === tid);
+  const mod  = MODELOS[tid];
+
+  // Titre
+  document.getElementById("modal-titulo").textContent = "📖 Modelo — " + tObj.es;
+  document.getElementById("modal-subtitulo").textContent = tObj.desc;
+
+  // Construire le contenu
+  let html = "";
+
+  // ── Tableau ──
+  html += `<table class="tabla-conjugacion">
+    <thead>
+      <tr>
+        <th>Persona</th>
+        <th>HABLAR<br/><small style="font-weight:600;opacity:.75">(-ar)</small></th>
+        <th>COMER<br/><small style="font-weight:600;opacity:.75">(-er)</small></th>
+        <th>VIVIR<br/><small style="font-weight:600;opacity:.75">(-ir)</small></th>
+      </tr>
+    </thead>
+    <tbody>`;
+
+  PERS_TABLA.forEach((p, i) => {
+    const [rH,tH] = mod.hablar[i];
+    const [rC,tC] = mod.comer[i];
+    const [rV,tV] = mod.vivir[i];
+    html += `<tr>
+      <td>${p}</td>
+      <td><span class="radical">${rH}</span><span class="terminacion">${tH}</span></td>
+      <td><span class="radical">${rC}</span><span class="terminacion">${tC}</span></td>
+      <td><span class="radical">${rV}</span><span class="terminacion">${tV}</span></td>
+    </tr>`;
+  });
+
+  html += `</tbody></table>`;
+
+  // ── Irréguliers ──
+  if (mod.irregulares && mod.irregulares.length > 0) {
+    html += `<div class="modal-irregulares">
+      <strong>⚡ Formas irregulares frecuentes</strong>`;
+
+    mod.irregulares.forEach(irr => {
+      html += `<div style="margin-bottom:6px;">
+        <span style="font-weight:900;color:var(--bleu-fonce);margin-right:6px;">${irr.verbo} →</span>`;
+      irr.formas.forEach(f => {
+        // Trouver la terminaison à colorier : on cherche la plus longue terminaison connue
+        const coloreada = colorearForma(f, tid);
+        html += `<span class="forma-irreg">${coloreada}</span>`;
+      });
+      html += `</div>`;
+    });
+
+    html += `</div>`;
+  }
+
+  document.getElementById("modal-contenido").innerHTML = html;
+  document.getElementById("overlay-modal").classList.add("visible");
+  document.body.style.overflow = "hidden";
+}
+
+/**
+ * Colorie la terminaison d'une forme irrégulière.
+ * Heuristique : on cherche les terminaisons connues pour ce temps.
+ */
+function colorearForma(forma, tid) {
+  // Terminaisons à repérer selon le temps (ordre décroissant de longueur)
+  const suffixes = {
+    presente:   ["amos","áis","an","ais","as","o","es","en","e"],
+    indefinido: ["amos","asteis","isteis","aron","ieron","iste","ó","í"],
+    imperfecto: ["ábamos","íamos","abais","íais","aban","ían","aba","ía","as","a"],
+    perfecto:   ["ado","ido"],
+    futuro:     ["emos","éis","án","ás","é","á"],
+  };
+  const lista = suffixes[tid] || [];
+  for (const suf of lista) {
+    if (forma.endsWith(suf)) {
+      const base = forma.slice(0, -suf.length);
+      if (base.length > 0) {
+        return `<span class="radical">${base}</span><span class="t-irreg">${suf}</span>`;
+      }
+    }
+  }
+  return forma; // pas de coloriage si trop court
+}
+
+function cerrarAyuda() {
+  document.getElementById("overlay-modal").classList.remove("visible");
+  document.body.style.overflow = "";
+}
+
+function cerrarAyudaSiOverlay(e) {
+  if (e.target === document.getElementById("overlay-modal")) cerrarAyuda();
+}
+
+// Fermeture avec Échap
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") cerrarAyuda();
+});
 
 /* ============================================================
    H. DÉMARRAGE
