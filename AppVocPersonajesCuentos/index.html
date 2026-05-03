@@ -563,6 +563,23 @@ header {
 .def-chip { font-size: calc(var(--fs) * 0.82); }
 
 /* ============================================================
+   TAP-TO-SELECT
+   ============================================================ */
+.drag-item.selected {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(247,167,42,.3);
+  transform: translateY(-2px) scale(1.05);
+  z-index: 10;
+  position: relative;
+}
+.drop-zone.tap-ready {
+  background: #ddd7ff;
+  border-color: var(--primary);
+  border-style: solid;
+}
+
+/* ============================================================
    RESPONSIVE
    ============================================================ */
 @media(max-width: 900px) {
@@ -817,13 +834,130 @@ function buildUI() {
 }
 
 /* ============================================================
-   DRAG & DROP
+   INTERACTION – TAP-TO-SELECT + TAP-TO-PLACE
+   Fonctionne sur mobile (touch), tablette et desktop (clic).
+   Le drag HTML5 reste actif sur desktop comme raccourci.
    ============================================================ */
-let dragItem = null;
+let selectedItem = null;  // l'élément actuellement sélectionné
 
-function addDragListeners(el) {
+// --- Désélectionner tout ---
+function deselectAll() {
+  if (selectedItem) {
+    selectedItem.classList.remove('selected');
+    selectedItem = null;
+  }
+  // Retirer le highlight des zones
+  document.querySelectorAll('.drop-zone.tap-ready').forEach(z => z.classList.remove('tap-ready'));
+}
+
+// --- Surligner les zones compatibles ---
+function highlightZones(type) {
+  document.querySelectorAll(`.drop-zone[data-type="${type}"]`).forEach(z => z.classList.add('tap-ready'));
+}
+
+// --- Tap sur un chip (dans la banque ou dans une zone) ---
+function handleChipTap(el) {
+  if (!gameStarted) return;
+
+  // Si on re-tape sur le chip déjà sélectionné → désélectionner
+  if (el === selectedItem) { deselectAll(); return; }
+
+  // Si le chip est dans une zone → on le "reprend" (retour banque + sélection)
+  const zone = el.closest('.drop-zone');
+  if (zone) {
+    const row  = parseInt(zone.dataset.row);
+    const type = zone.dataset.type;
+    const id   = placed[type][row];
+    if (id === null) return;
+    placed[type][row] = null;
+    clearZone(zone, type);
+    returnToPool(id, type);
+    // Sélectionner le chip source de la banque
+    const src = document.getElementById(`${type}-src-${id}`);
+    if (src) {
+      deselectAll();
+      selectedItem = src;
+      src.classList.add('selected');
+      highlightZones(type);
+    }
+    clearFeedback();
+    return;
+  }
+
+  // Sinon : sélectionner ce chip
+  deselectAll();
+  selectedItem = el;
+  el.classList.add('selected');
+  highlightZones(el.dataset.type);
+}
+
+// --- Tap sur une zone de dépôt ---
+function handleZoneTap(zone) {
+  if (!gameStarted) return;
+
+  // Si un chip est sélectionné et compatible avec cette zone
+  if (selectedItem && selectedItem.dataset.type === zone.dataset.type) {
+    placeItem(selectedItem, zone);
+    deselectAll();
+    clearFeedback();
+    return;
+  }
+
+  // Si la zone contient déjà quelque chose et qu'on tape dessus sans sélection
+  // → ne rien faire (le tap sur le contenu s'occupe du "reprendre")
+}
+
+// --- Poser un item dans une zone ---
+function placeItem(item, zone) {
+  const row        = parseInt(zone.dataset.row);
+  const type       = zone.dataset.type;
+  const incomingId = parseInt(item.dataset.id);
+
+  // Si la zone a déjà un item, le renvoyer à la banque
+  const currentId = placed[type][row];
+  if (currentId !== null) returnToPool(currentId, type);
+
+  // Si l'item était déjà placé ailleurs, vider cet emplacement
+  const prevRow = findPlaced(type, incomingId);
+  if (prevRow !== null) {
+    placed[type][prevRow] = null;
+    const pz = document.getElementById(`drop-${type}-${prevRow}`);
+    if (pz) clearZone(pz, type);
+  }
+
+  // Placer
+  placed[type][row] = incomingId;
+  zone.className = 'drop-zone';
+  zone.textContent = '';
+
+  // Afficher le contenu dans la zone
+  const badge = document.createElement('div');
+  badge.className = item.className.replace('selected','').trim();
+  badge.dataset.id   = incomingId;
+  badge.dataset.type = type;
+  badge.textContent  = item.textContent;
+  badge.style.cursor = 'pointer';
+  badge.style.boxShadow = 'none';
+  badge.style.margin = '0';
+  addItemListeners(badge);
+  zone.appendChild(badge);
+
+  // Masquer l'original dans la banque
+  item.style.display = 'none';
+}
+
+// --- Attacher les listeners à un chip ---
+function addItemListeners(el) {
+  el.addEventListener('click', e => {
+    e.stopPropagation();
+    handleChipTap(el);
+  });
+
+  // Drag HTML5 (desktop uniquement, en complément)
+  el.draggable = true;
   el.addEventListener('dragstart', e => {
     if (!gameStarted) { e.preventDefault(); return; }
+    deselectAll();
     dragItem = el;
     setTimeout(() => el.classList.add('dragging'), 0);
   });
@@ -831,14 +965,21 @@ function addDragListeners(el) {
     el.classList.remove('dragging');
     dragItem = null;
   });
-  // Click on placed item to send it back to pool
-  el.addEventListener('click', () => {
-    if (!gameStarted) return;
-    if (el.closest('.drop-zone')) sendBackToPool(el);
-  });
 }
 
+// Alias pour compat avec buildUI
+function addDragListeners(el) { addItemListeners(el); }
+
+// --- Drop zones listeners ---
 function addDropListeners(zone) {
+  // Tap
+  zone.addEventListener('click', e => {
+    // Si le clic vient d'un chip enfant, laisser handleChipTap s'en occuper
+    if (e.target !== zone) return;
+    handleZoneTap(zone);
+  });
+
+  // Drag HTML5
   zone.addEventListener('dragover', e => {
     e.preventDefault();
     if (dragItem && dragItem.dataset.type === zone.dataset.type) zone.classList.add('over');
@@ -848,43 +989,23 @@ function addDropListeners(zone) {
     e.preventDefault();
     zone.classList.remove('over');
     if (!dragItem || dragItem.dataset.type !== zone.dataset.type) return;
-
-    const row = parseInt(zone.dataset.row);
-    const type = zone.dataset.type;
-    const incomingId = parseInt(dragItem.dataset.id);
-
-    // If zone already has an item, return it to pool first
-    const currentId = placed[type][row];
-    if (currentId !== null) returnToPool(currentId, type);
-
-    // If incoming was placed elsewhere, clear that slot
-    const prevRow = findPlaced(type, incomingId);
-    if (prevRow !== null) {
-      placed[type][prevRow] = null;
-      const pz = document.getElementById(`drop-${type}-${prevRow}`);
-      if (pz) clearZone(pz, type);
-    }
-
-    // Place in this zone
-    placed[type][row] = incomingId;
-    zone.className = 'drop-zone';
-    zone.textContent = '';
-    const clone = dragItem.cloneNode(true);
-    clone.draggable = false;
-    clone.style.cursor = 'pointer';
-    clone.style.boxShadow = 'none';
-    addDragListeners(clone);
-    zone.appendChild(clone);
-
-    dragItem.style.display = 'none';
+    placeItem(dragItem, zone);
     clearFeedback();
   });
-
-  // Click on empty zone = no-op
 }
 
+// Clic sur le fond → désélectionner
+document.addEventListener('click', e => {
+  if (!selectedItem) return;
+  if (!e.target.closest('.drag-item') && !e.target.closest('.drop-zone')) deselectAll();
+});
+
+let dragItem = null;
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
 function sendBackToPool(el) {
-  // Find which zone contains this element
   const zone = el.closest('.drop-zone');
   if (!zone) return;
   const row  = parseInt(zone.dataset.row);
@@ -902,7 +1023,7 @@ function clearZone(zone, type) {
 }
 
 function findPlaced(type, id) {
-  for (let i=0; i<DATA.length; i++) {
+  for (let i = 0; i < DATA.length; i++) {
     if (placed[type][i] === id) return i;
   }
   return null;
